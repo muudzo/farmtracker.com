@@ -1,0 +1,100 @@
+:root {
+    --primary-color: #4a7c59;
+    --secondary-color: #6b9080;
+    --background-color: #f0f4f3;
+    --text-color: #333;
+    --white: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--white);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    margin-top: 30px;
+}
+
+h1 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    font-size: 2.5rem;
+    font-weight: 600;
+}
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--background-color);
+}
+
+.tab {
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--secondary-color);
+    font-weight: 500;
+}
+
+.tab.active {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+}
+
+button:hover {
+    background-color: var(--secondary-color);
+}
+
+.record-list {
+    margin-top: 20px;
+}
+
+.record-item {
+    padding: 10px;
+    background-color: #f9f9f9;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--primary-color);
+    border-radius: 6px;
+}

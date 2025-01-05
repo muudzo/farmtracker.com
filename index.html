@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOOMETRICS</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🐄 MOOMETRICS</h1>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="animal-records">Animal Records</div>
+            <div class="tab" data-tab="financial-tracking">Financial Tracking</div>
+        </div>
+
+        <div id="animal-records" class="tab-content active">
+            <h2>Animal Records</h2>
+            <form id="animal-form">
+                <input type="text" name="name" placeholder="Animal Name" required>
+                <input type="text" name="species" placeholder="Species" required>
+                <button type="submit">Add Animal</button>
+            </form>
+            <div id="animal-list" class="record-list"></div>
+        </div>
+
+        <div id="financial-tracking" class="tab-content">
+            <h2>Financial Tracking</h2>
+            <form id="financial-form">
+                <input type="text" name="transaction" placeholder="Transaction Name" required>
+                <input type="number" name="amount" placeholder="Amount" required>
+                <button type="submit">Add Transaction</button>
+            </form>
+            <div id="financial-list" class="record-list"></div>
+        </div>
+    </div>
+
+</body>
+</html>
