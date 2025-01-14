@@ -136,6 +136,63 @@ button:hover {
             <div id="financial-list" class="record-list"></div>
         </div>
     </div>
-
+    <script>
+        
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+                
+                this.classList.add('active');
+                const tabContentId = this.getAttribute('data-tab');
+                document.getElementById(tabContentId).classList.add('active');
+            });
+        });
+    
+       
+        document.getElementById('animal-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+    
+            
+            const animalName = this.name.value.trim();
+            const animalSpecies = this.species.value.trim();
+    
+            if (animalName && animalSpecies) {
+                
+                const recordItem = document.createElement('div');
+                recordItem.classList.add('record-item');
+                recordItem.textContent = `${animalName} - ${animalSpecies}`;
+    
+                
+                document.getElementById('animal-list').appendChild(recordItem);
+    
+                
+                this.reset();
+            }
+        });
+    
+        document.getElementById('financial-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+    
+           
+            const transactionName = this.transaction.value.trim();
+            const transactionAmount = parseFloat(this.amount.value.trim());
+    
+            if (transactionName && !isNaN(transactionAmount)) {
+               
+                const recordItem = document.createElement('div');
+                recordItem.classList.add('record-item');
+                recordItem.textContent = `${transactionName} - $${transactionAmount.toFixed(2)}`;
+    
+                
+                document.getElementById('financial-list').appendChild(recordItem);
+    
+                this.reset();
+            }
+        });
+    </script>
+    
 </body>
 </html>
