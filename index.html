@@ -114,6 +114,7 @@ button:hover {
         <div class="tabs">
             <div class="tab active" data-tab="animal-records">Animal Records</div>
             <div class="tab" data-tab="financial-tracking">Financial Tracking</div>
+            <div class ="tab" data-tab="vaccine-tracking">Vaccine Tracking</div>
         </div>
 
         <div id="animal-records" class="tab-content active">
@@ -121,6 +122,8 @@ button:hover {
             <form id="animal-form">
                 <input type="text" name="name" placeholder="Animal Name" required>
                 <input type="text" name="species" placeholder="Species" required>
+                <input type="date" name="birthdate" placeholder="Birthdate">
+                <input type ="text" name="breed" placeholder="Breed">
                 <button type="submit">Add Animal</button>
             </form>
             <div id="animal-list" class="record-list"></div>
@@ -134,65 +137,93 @@ button:hover {
                 <button type="submit">Add Transaction</button>
             </form>
             <div id="financial-list" class="record-list"></div>
+
+        </div>
+        <div id="vaccine-tracking" class="tab-content">
+            <h2>Vaccine Tracking</h2>
+            <form id="vaccine-form">
+                <input type="text" name="vaccine" placeholder="Vaccine Name" required>
+                <input type="date" name="date" placeholder="Date" required>
+                <button type="submit">Add Vaccine</button>
+            </form>
+            <div id="vaccine-list" class="record-list"></div>
         </div>
     </div>
     <script>
         
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', function () {
-                
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-    
-                
-                this.classList.add('active');
-                const tabContentId = this.getAttribute('data-tab');
-                document.getElementById(tabContentId).classList.add('active');
-            });
+        
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', function () {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            this.classList.add('active');
+            const tabContentId = this.getAttribute('data-tab');
+            document.getElementById(tabContentId).classList.add('active');
         });
+    });
+
     
-       
-        document.getElementById('animal-form').addEventListener('submit', function (event) {
-            event.preventDefault();
-    
+    function handleFormSubmission(event) {
+        event.preventDefault();
+
+        const form = event.target;
+        const formId = form.id;
+
+        if (formId === 'animal-form') {
             
-            const animalName = this.name.value.trim();
-            const animalSpecies = this.species.value.trim();
-    
+            const animalName = form.name.value.trim();
+            const animalSpecies = form.species.value.trim();
+
             if (animalName && animalSpecies) {
-                
-                const recordItem = document.createElement('div');
-                recordItem.classList.add('record-item');
-                recordItem.textContent = `${animalName} - ${animalSpecies}`;
-    
-                
-                document.getElementById('animal-list').appendChild(recordItem);
-    
-                
-                this.reset();
+                addAnimalRecord(animalName, animalSpecies);
+                form.reset();
             }
-        });
-    
-        document.getElementById('financial-form').addEventListener('submit', function (event) {
-            event.preventDefault();
-    
-           
-            const transactionName = this.transaction.value.trim();
-            const transactionAmount = parseFloat(this.amount.value.trim());
-    
+        } else if (formId === 'financial-form') {
+            
+            const transactionName = form.transaction.value.trim();
+            const transactionAmount = parseFloat(form.amount.value.trim());
+
             if (transactionName && !isNaN(transactionAmount)) {
-               
-                const recordItem = document.createElement('div');
-                recordItem.classList.add('record-item');
-                recordItem.textContent = `${transactionName} - $${transactionAmount.toFixed(2)}`;
+                addTransactionRecord(transactionName, transactionAmount);
+                form.reset();
+            }
+        }
+    }
+
     
-                
-                document.getElementById('financial-list').appendChild(recordItem);
-    
-                this.reset();
+    function addAnimalRecord(name, species) {
+        const recordItem = document.createElement('div');
+        recordItem.classList.add('record-item');
+        recordItem.dataset.animalName = name.toLowerCase(); // Store animal name for lookup
+        recordItem.textContent = `${name} - ${species}`;
+        document.getElementById('animal-list').appendChild(recordItem);
+    }
+
+   
+    function addTransactionRecord(transactionName, transactionAmount) {
+        const recordItem = document.createElement('div');
+        recordItem.classList.add('record-item');
+        recordItem.textContent = `${transactionName} - $${transactionAmount.toFixed(2)}`;
+        document.getElementById('financial-list').appendChild(recordItem);
+
+       
+        const animalList = document.getElementById('animal-list');
+        const animals = animalList.querySelectorAll('.record-item');
+
+        animals.forEach(animal => {
+            if (animal.dataset.animalName === transactionName.toLowerCase()) {
+                animal.remove();
             }
         });
-    </script>
+    }
+
+    
+    document.getElementById('animal-form').addEventListener('submit', handleFormSubmission);
+    document.getElementById('financial-form').addEventListener('submit', handleFormSubmission);
+</script>
+
+   
     
 </body>
 </html>
