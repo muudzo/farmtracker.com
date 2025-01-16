@@ -4,108 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MOOMETRICS</title>
-   <style>
-    :root {
-    --primary-color: #4a7c59;
-    --secondary-color: #6b9080;
-    --background-color: #f0f4f3;
-    --text-color: #333;
-    --white: #ffffff;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    line-height: 1.6;
-}
-
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: var(--white);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    margin-top: 30px;
-}
-
-h1 {
-    text-align: center;
-    color: var(--primary-color);
-    margin-bottom: 20px;
-    font-size: 2.5rem;
-    font-weight: 600;
-}
-
-.tabs {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-    border-bottom: 2px solid var(--background-color);
-}
-
-.tab {
-    padding: 12px 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: var(--secondary-color);
-    font-weight: 500;
-}
-
-.tab.active {
-    color: var(--primary-color);
-    font-weight: 700;
-}
-
-.tab-content {
-    display: none;
-}
-
-.tab-content.active {
-    display: block;
-}
-
-form {
-    margin-bottom: 20px;
-}
-
-input, button {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 6px;
-    border: 1px solid #ddd;
-}
-
-button {
-    background-color: var(--primary-color);
-    color: var(--white);
-    border: none;
-}
-
-button:hover {
-    background-color: var(--secondary-color);
-}
-
-.record-list {
-    margin-top: 20px;
-}
-
-.record-item {
-    padding: 10px;
-    background-color: #f9f9f9;
-    margin-bottom: 10px;
-    border-left: 4px solid var(--primary-color);
-    border-radius: 6px;
-}
-   </style>
+   <link rel = "stylesheet" href = "styles.css">
 </head>
 <body>
     <div class="container">
@@ -114,7 +13,7 @@ button:hover {
         <div class="tabs">
             <div class="tab active" data-tab="animal-records">Animal Records</div>
             <div class="tab" data-tab="financial-tracking">Financial Tracking</div>
-            <div class ="tab" data-tab="vaccine-tracking">Vaccine Tracking</div>
+            <div class="tab" data-tab="vaccine-tracking">Vaccine Tracking</div>
         </div>
 
         <div id="animal-records" class="tab-content active">
@@ -123,10 +22,11 @@ button:hover {
                 <input type="text" name="name" placeholder="Animal Name" required>
                 <input type="text" name="species" placeholder="Species" required>
                 <input type="date" name="birthdate" placeholder="Birthdate">
-                <input type ="text" name="breed" placeholder="Breed">
+                <input type="text" name="breed" placeholder="Breed">
                 <button type="submit">Add Animal</button>
             </form>
             <div id="animal-list" class="record-list"></div>
+            <div id="animal-details"></div>
         </div>
 
         <div id="financial-tracking" class="tab-content">
@@ -137,8 +37,8 @@ button:hover {
                 <button type="submit">Add Transaction</button>
             </form>
             <div id="financial-list" class="record-list"></div>
-
         </div>
+
         <div id="vaccine-tracking" class="tab-content">
             <h2>Vaccine Tracking</h2>
             <form id="vaccine-form">
@@ -149,81 +49,109 @@ button:hover {
             <div id="vaccine-list" class="record-list"></div>
         </div>
     </div>
+
     <script>
-        
-        
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', function () {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        function initializeEventListeners() {
+            document.querySelector('.tabs').addEventListener('click', function (e) {
+                if (e.target.classList.contains('tab')) {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-            this.classList.add('active');
-            const tabContentId = this.getAttribute('data-tab');
-            document.getElementById(tabContentId).classList.add('active');
-        });
-    });
+                    e.target.classList.add('active');
+                    const tabContentId = e.target.getAttribute('data-tab');
+                    document.getElementById(tabContentId).classList.add('active');
+                }
+            });
 
-    
-    function handleFormSubmission(event) {
-        event.preventDefault();
+            document.getElementById('animal-form').addEventListener('submit', handleFormSubmission);
+            document.getElementById('financial-form').addEventListener('submit', handleFormSubmission);
+            document.getElementById('vaccine-form').addEventListener('submit', handleFormSubmission);
+        }
 
-        const form = event.target;
-        const formId = form.id;
+        function handleFormSubmission(event) {
+            event.preventDefault();
+            const form = event.target;
 
-        if (formId === 'animal-form') {
-            
-            const animalName = form.name.value.trim();
-            const animalSpecies = form.species.value.trim();
+            if (form.id === 'animal-form') {
+                const name = form.name.value.trim();
+                const species = form.species.value.trim();
+                const birthdate = form.birthdate.value || 'Unknown';
+                const breed = form.breed.value || 'Unknown';
 
-            if (animalName && animalSpecies) {
-                addAnimalRecord(animalName, animalSpecies);
-                form.reset();
-            }
-        } else if (formId === 'financial-form') {
-            
-            const transactionName = form.transaction.value.trim();
-            const transactionAmount = parseFloat(form.amount.value.trim());
+                if (name && species) {
+                    addAnimalRecord(name, species, birthdate, breed);
+                    form.reset();
+                }
+            } else if (form.id === 'financial-form') {
+                const transactionName = form.transaction.value.trim();
+                const amount = parseFloat(form.amount.value);
 
-            if (transactionName && !isNaN(transactionAmount)) {
-                addTransactionRecord(transactionName, transactionAmount);
-                form.reset();
+                if (transactionName && !isNaN(amount)) {
+                    addTransactionRecord(transactionName, amount);
+                    form.reset();
+                }
+            }else if (form.id === 'vaccine-form') {
+                const vaccineName = form.vaccine.value.trim();
+                const date = form.date.value;
+
+                if (vaccineName && date) {
+                    addVaccineRecord(vaccineName, date);
+                    form.reset();
+                }
             }
         }
-    }
 
-    
-    function addAnimalRecord(name, species) {
-        const recordItem = document.createElement('div');
-        recordItem.classList.add('record-item');
-        recordItem.dataset.animalName = name.toLowerCase(); // Store animal name for lookup
-        recordItem.textContent = `${name} - ${species}`;
-        document.getElementById('animal-list').appendChild(recordItem);
-    }
+        function addAnimalRecord(name, species, birthdate = 'Unknown', breed = 'Unknown') {
+            const recordItem = document.createElement('div');
+            recordItem.classList.add('record-item');
+            recordItem.dataset.name = name.toLowerCase();
+            recordItem.dataset.species = species;
+            recordItem.dataset.birthdate = birthdate;
+            recordItem.dataset.breed = breed;
+            recordItem.dataset.status = 'Healthy';
+            recordItem.textContent = `${name} - ${species}`;
 
-   
-    function addTransactionRecord(transactionName, transactionAmount) {
-        const recordItem = document.createElement('div');
-        recordItem.classList.add('record-item');
-        recordItem.textContent = `${transactionName} - $${transactionAmount.toFixed(2)}`;
-        document.getElementById('financial-list').appendChild(recordItem);
+            recordItem.addEventListener('click', function () {
+                toggleAnimalDetails(recordItem.dataset);
+            });
 
-       
-        const animalList = document.getElementById('animal-list');
-        const animals = animalList.querySelectorAll('.record-item');
+            document.getElementById('animal-list').appendChild(recordItem);
+        }
 
-        animals.forEach(animal => {
-            if (animal.dataset.animalName === transactionName.toLowerCase()) {
-                animal.remove();
+        function toggleAnimalDetails(data) {
+            const detailsSection = document.getElementById('animal-details');
+            const isVisible = detailsSection.style.display === 'block';
+
+            if (!isVisible || detailsSection.dataset.currentName !== data.name) {
+                detailsSection.style.display = 'block';
+                detailsSection.dataset.currentName = data.name;
+                detailsSection.innerHTML = `
+                    <h3>Animal Details</h3>
+                    <p><strong>Name:</strong> ${data.name}</p>
+                    <p><strong>Species:</strong> ${data.species}</p>
+                    <p><strong>Birthdate:</strong> ${data.birthdate}</p>
+                    <p><strong>Breed:</strong> ${data.breed}</p>
+                `;
+            } else {
+                detailsSection.style.display = 'none';
+                detailsSection.dataset.currentName = '';
             }
-        });
-    }
+        }
 
-    
-    document.getElementById('animal-form').addEventListener('submit', handleFormSubmission);
-    document.getElementById('financial-form').addEventListener('submit', handleFormSubmission);
-</script>
+        function addTransactionRecord(name, amount) {
+            const recordItem = document.createElement('div');
+            recordItem.classList.add('record-item');
+            recordItem.textContent = `${name} - $${amount.toFixed(2)}`;
+            document.getElementById('financial-list').appendChild(recordItem);
+        }
+        function addVaccineRecord(vaccineName, date) {
+            const recordItem = document.createElement('div');
+            recordItem.classList.add('record-item');
+            recordItem.textContent = `${vaccineName} - ${date}`;
+            document.getElementById('vaccine-list').appendChild(recordItem);
+        }
 
-   
-    
+        initializeEventListeners();
+    </script>
 </body>
 </html>
