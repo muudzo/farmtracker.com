@@ -62,10 +62,12 @@ function addAnimalRecord(name, species, birthdate = 'Unknown', breed = 'Unknown'
     recordItem.addEventListener('click', function () {
         toggleAnimalDetails(recordItem.dataset);
     });
-
     document.getElementById('animal-list').appendChild(recordItem);
 }
 
+
+
+   
 function toggleAnimalDetails(data) {
     const detailsSection = document.getElementById('animal-details');
     const isVisible = detailsSection.style.display === 'block';
