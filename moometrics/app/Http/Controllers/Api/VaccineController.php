@@ -7,19 +7,21 @@ use Illuminate\Http\Request;
 
 class VaccineController extends Controller
 {
+    //validate the request and create a new vaccine record
     public function index()
-    {
+    {.
         return Vaccine::all();
     }
-
+//create new record
     public function store(Request $request)
     {
         $validatedData = $request->validate([
             'vaccine' => 'required|string',
             'date' => 'required|date'
         ]);
-
+/
         $vaccine = Vaccine::create($validatedData);
+        //return the new record
         return response()->json($vaccine, 201);
     }
 }
