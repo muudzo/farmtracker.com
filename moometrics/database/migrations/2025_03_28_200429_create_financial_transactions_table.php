@@ -13,8 +13,7 @@ return new class extends Migration
         $table->id();
         $table->string('transaction');
         $table->decimal('amount', 10, 2);
-        $table->timestamps();
-    });
+        $table->date('date');
 }
 
     public function down(): void

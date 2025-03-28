@@ -12,7 +12,8 @@ return new class extends Migration
             $table->id();
             $table->string('vaccine');
             $table->date('date');
-            $table->timestamps();
+            $table->administered_by();
+            
         });
     }
     public function down(): void

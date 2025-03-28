@@ -10,12 +10,12 @@ return new class extends Migration
 {
     Schema::create('animals', function (Blueprint $table) {
         $table->id();
-        $table->string('name');
+        $table->string('number');
         $table->string('species');
         $table->date('birthdate')->nullable();
         $table->string('breed')->nullable();
         $table->string('status')->default('Healthy');
-        $table->timestamps();
+       
     });
 }
     public function down(): void
