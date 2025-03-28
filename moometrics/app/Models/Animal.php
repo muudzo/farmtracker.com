@@ -8,7 +8,7 @@ class Animal extends Model
 {
     //define the fillable fields
     protected $fillable = [
-        'number', 'species', 'birthdate', 'breed', 'status'
+        'names', 'species', 'birthdate', 'breed', 'status'
     ];
 //define the date fields
     protected $dates = ['birthdate'];
