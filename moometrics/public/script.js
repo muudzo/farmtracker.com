@@ -1,4 +1,5 @@
- function initializeEventListeners() {
+// Event listeners for tab switching and form submissions
+function initializeEventListeners() {
     document.querySelector('.tabs').addEventListener('click', function (e) {
         if (e.target.classList.contains('tab')) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -15,6 +16,7 @@
     document.getElementById('vaccine-form').addEventListener('submit', handleFormSubmission);
 }
 
+// Handle form submissions
 function handleFormSubmission(event) {
     event.preventDefault();
     const form = event.target;
@@ -22,52 +24,33 @@ function handleFormSubmission(event) {
     if (form.id === 'animal-form') {
         const name = form.name.value.trim();
         const species = form.species.value.trim();
-        const birthdate = form.birthdate.value || 'Unknown';
-        const breed = form.breed.value || 'Unknown';
+        const birthdate = form.birthdate.value || null;
+        const breed = form.breed.value || null;
 
         if (name && species) {
             addAnimalRecord(name, species, birthdate, breed);
             form.reset();
         }
     } else if (form.id === 'financial-form') {
-        const transactionName = form.transaction.value.trim();
+        const transaction = form.transaction.value.trim();
         const amount = parseFloat(form.amount.value);
 
-        if (transactionName && !isNaN(amount)) {
-            addTransactionRecord(transactionName, amount);
-            removeAnimalRecord(transactionName);
+        if (transaction && !isNaN(amount)) {
+            addTransactionRecord(transaction, amount);
             form.reset();
         }
-    }else if (form.id === 'vaccine-form') {
-        const vaccineName = form.vaccine.value.trim();
+    } else if (form.id === 'vaccine-form') {
+        const vaccine = form.vaccine.value.trim();
         const date = form.date.value;
 
-        if (vaccineName && date) {
-            addVaccineRecord(vaccineName, date);
+        if (vaccine && date) {
+            addVaccineRecord(vaccine, date);
             form.reset();
         }
     }
 }
 
-function addAnimalRecord(name, species, birthdate = 'Unknown', breed = 'Unknown') {
-    const recordItem = document.createElement('div');
-    recordItem.classList.add('record-item');
-    recordItem.dataset.name = name.toLowerCase();
-    recordItem.dataset.species = species;
-    recordItem.dataset.birthdate = birthdate;
-    recordItem.dataset.breed = breed;
-    recordItem.dataset.status = 'Healthy';
-    recordItem.textContent = `${name} - ${species}`;
-
-    recordItem.addEventListener('click', function () {
-        toggleAnimalDetails(recordItem.dataset);
-    });
-    document.getElementById('animal-list').appendChild(recordItem);
-}
-
-
-
-   
+// Toggle animal details display
 function toggleAnimalDetails(data) {
     const detailsSection = document.getElementById('animal-details');
     const isVisible = detailsSection.style.display === 'block';
@@ -79,41 +62,28 @@ function toggleAnimalDetails(data) {
             <h3>Animal Details</h3>
             <p><strong>Name:</strong> ${data.name}</p>
             <p><strong>Species:</strong> ${data.species}</p>
-            <p><strong>Birthdate:</strong> ${data.birthdate}</p>
-            <p><strong>Breed:</strong> ${data.breed}</p>
+            <p><strong>Birthdate:</strong> ${data.birthdate || 'Unknown'}</p>
+            <p><strong>Breed:</strong> ${data.breed || 'Unknown'}</p>
         `;
     } else {
         detailsSection.style.display = 'none';
         detailsSection.dataset.currentName = '';
     }
 }
+
+// Remove animal record from DOM
 function removeAnimalRecord(animalName) {
-const animalList = document.getElementById('animal-list');
-const animalItems = animalList.querySelectorAll('.record-item');
+    const animalList = document.getElementById('animal-list');
+    const animalItems = animalList.querySelectorAll('.record-item');
 
-animalItems.forEach(item => {
-if (item.dataset.name === animalName.toLowerCase()) {
-    animalList.removeChild(item);
-}
-});
-}
-
-
-function addTransactionRecord(name, amount) {
-    const recordItem = document.createElement('div');
-    recordItem.classList.add('record-item');
-    recordItem.textContent = `${name} - $${amount.toFixed(2)}`;
-    document.getElementById('financial-list').appendChild(recordItem);
-}
-function addVaccineRecord(vaccineName, date) {
-    const recordItem = document.createElement('div');
-    recordItem.classList.add('record-item');
-    recordItem.textContent = `${vaccineName} - ${date}`;
-    document.getElementById('vaccine-list').appendChild(recordItem);
+    animalItems.forEach(item => {
+        if (item.dataset.name === animalName.toLowerCase()) {
+            animalList.removeChild(item);
+        }
+    });
 }
 
-initializeEventListeners();
-
+// Add animal record - API connected version
 function addAnimalRecord(name, species, birthdate = null, breed = null) {
     fetch('/api/animals', {
         method: 'POST',
@@ -123,7 +93,12 @@ function addAnimalRecord(name, species, birthdate = null, breed = null) {
         },
         body: JSON.stringify({ name, species, birthdate, breed })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    })
     .then(data => {
         const recordItem = document.createElement('div');
         recordItem.classList.add('record-item');
@@ -140,9 +115,13 @@ function addAnimalRecord(name, species, birthdate = null, breed = null) {
 
         document.getElementById('animal-list').appendChild(recordItem);
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to add animal: ' + error.message);
+    });
 }
 
+// Add transaction record - API connected version
 function addTransactionRecord(transaction, amount) {
     fetch('/api/transactions', {
         method: 'POST',
@@ -152,16 +131,25 @@ function addTransactionRecord(transaction, amount) {
         },
         body: JSON.stringify({ transaction, amount })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    })
     .then(data => {
         const recordItem = document.createElement('div');
         recordItem.classList.add('record-item');
         recordItem.textContent = `${transaction} - $${amount.toFixed(2)}`;
         document.getElementById('financial-list').appendChild(recordItem);
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to add transaction: ' + error.message);
+    });
 }
 
+// Add vaccine record - API connected version
 function addVaccineRecord(vaccine, date) {
     fetch('/api/vaccines', {
         method: 'POST',
@@ -171,45 +159,104 @@ function addVaccineRecord(vaccine, date) {
         },
         body: JSON.stringify({ vaccine, date })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    })
     .then(data => {
         const recordItem = document.createElement('div');
         recordItem.classList.add('record-item');
         recordItem.textContent = `${vaccine} - ${date}`;
         document.getElementById('vaccine-list').appendChild(recordItem);
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to add vaccine: ' + error.message);
+    });
 }
 
-// Add a function to load existing records on page load
+// Load existing records from the database
 function loadRecords() {
+    // Clear existing records
+    document.getElementById('animal-list').innerHTML = '';
+    document.getElementById('financial-list').innerHTML = '';
+    document.getElementById('vaccine-list').innerHTML = '';
+    
     // Fetch animals
     fetch('/api/animals')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch animals');
+            }
+            return response.json();
+        })
         .then(animals => {
-            animals.forEach(animal => {
-                addAnimalRecord(animal.name, animal.species, animal.birthdate, animal.breed);
-            });
-        });
+            if (animals && animals.length > 0) {
+                animals.forEach(animal => {
+                    const recordItem = document.createElement('div');
+                    recordItem.classList.add('record-item');
+                    recordItem.dataset.name = animal.name.toLowerCase();
+                    recordItem.dataset.species = animal.species;
+                    recordItem.dataset.birthdate = animal.birthdate || 'Unknown';
+                    recordItem.dataset.breed = animal.breed || 'Unknown';
+                    recordItem.dataset.status = animal.status || 'Healthy';
+                    recordItem.textContent = `${animal.name} - ${animal.species}`;
+            
+                    recordItem.addEventListener('click', function () {
+                        toggleAnimalDetails(recordItem.dataset);
+                    });
+            
+                    document.getElementById('animal-list').appendChild(recordItem);
+                });
+            }
+        })
+        .catch(error => console.error('Error loading animals:', error));
 
     // Fetch transactions
     fetch('/api/transactions')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch transactions');
+            }
+            return response.json();
+        })
         .then(transactions => {
-            transactions.forEach(transaction => {
-                addTransactionRecord(transaction.transaction, transaction.amount);
-            });
-        });
+            if (transactions && transactions.length > 0) {
+                transactions.forEach(transaction => {
+                    const recordItem = document.createElement('div');
+                    recordItem.classList.add('record-item');
+                    recordItem.textContent = `${transaction.transaction} - $${parseFloat(transaction.amount).toFixed(2)}`;
+                    document.getElementById('financial-list').appendChild(recordItem);
+                });
+            }
+        })
+        .catch(error => console.error('Error loading transactions:', error));
 
     // Fetch vaccines
     fetch('/api/vaccines')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch vaccines');
+            }
+            return response.json();
+        })
         .then(vaccines => {
-            vaccines.forEach(vaccine => {
-                addVaccineRecord(vaccine.vaccine, vaccine.date);
-            });
-        });
+            if (vaccines && vaccines.length > 0) {
+                vaccines.forEach(vaccine => {
+                    const recordItem = document.createElement('div');
+                    recordItem.classList.add('record-item');
+                    recordItem.textContent = `${vaccine.vaccine} - ${vaccine.date}`;
+                    document.getElementById('vaccine-list').appendChild(recordItem);
+                });
+            }
+        })
+        .catch(error => console.error('Error loading vaccines:', error));
 }
 
-// Call loadRecords when the page loads
-document.addEventListener('DOMContentLoaded', loadRecords);
+// Initialize event listeners and load records
+document.addEventListener('DOMContentLoaded', function() {
+    initializeEventListeners();
+    loadRecords();
+});
